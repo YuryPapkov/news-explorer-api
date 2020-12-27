@@ -1,2 +1,8 @@
-# news-explorer-api
-Diploma project backend repo
+# Дипломный проект бэкенд
+
+## Директории
+
+## Запуск проекта
+
+`npm run start` — запускает сервер   
+`npm run dev` — запускает сервер с hot-reload
