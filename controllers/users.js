@@ -5,29 +5,14 @@ const { addErrorCode } = require('../utils/addErrorCode.js');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-// module.exports.getUsers = (req, res, next) => {
-//   User.find({})
-//     .then((users) => res.send({ data: users }))
-//     .catch(next);
-// };
-
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(() => { const e = new Error('Пользователь не найден'); e.name = 'NotFound'; return e; })
+    .orFail(() => { const e = new Error('Пользователь не найден'); e.name = 'NotFound'; throw e; })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       next(addErrorCode(err));
     });
 };
-
-// module.exports.getUserById = (req, res, next) => {
-//   User.findById(req.params.userId)
-//     .orFail(() => { const e = new Error('Пользователь не найден'); e.name = 'NotFound'; return e; })
-//     .then((user) => res.send({ data: user }))
-//     .catch((err) => {
-//       next(addErrorCode(err));
-//     });
-// };
 
 module.exports.createUser = (req, res, next) => {
   const {
@@ -38,8 +23,9 @@ module.exports.createUser = (req, res, next) => {
       email, password: hash, name,
     }))
 
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({ data: { name: user.name, email: user.email } }))
     .catch((err) => {
+      console.log(err.message);
       next(addErrorCode(err));
     });
 };
@@ -69,6 +55,22 @@ module.exports.login = (req, res, next) => {
         });
     });
 };
+
+// module.exports.getUsers = (req, res, next) => {
+//   User.find({})
+//     .then((users) => res.send({ data: users }))
+//     .catch(next);
+// };
+
+// module.exports.getUserById = (req, res, next) => {
+//   User.findById(req.params.userId)
+//     .orFail(() => { const e = new Error('Пользователь не найден'); e.name = 'NotFound'; return e; })
+//     .then((user) => res.send({ data: user }))
+//     .catch((err) => {
+//       next(addErrorCode(err));
+//     });
+// };
+
 // module.exports.updateUser = (req, res, next) => {
 //   const { name, about } = req.body;
 //   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })

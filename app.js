@@ -8,7 +8,7 @@ const { celebrate, Joi, errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger.js');
 const router = require('./routes/index.js');
 const { login, createUser } = require('./controllers/users');
-const auth = require('./middlewares/auth.js');
+const { auth } = require('./middlewares/auth.js');
 
 mongoose.connect('mongodb://localhost:27017/newsdb', {
   useNewUrlParser: true,
@@ -39,10 +39,11 @@ app.use('*', (req, res) => { res.status(404).send({ message: 'Запрашива
 app.use(errorLogger);
 // // обработка ошибок
 app.use(errors());
-// app.use((err, req, res, next) => {
-//   const { statusCode = 500, message } = err;
-//   res.status(statusCode).send({ message: statusCode === 500 ? 'Ошибка на сервере' : message });
-// });
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+  res.status(statusCode).send({ message: statusCode === 500 ? 'Ошибка на сервере' : message });
+  next();
+});
 
 app.listen(PORT, () => {
   console.log('Listening Port 3000');

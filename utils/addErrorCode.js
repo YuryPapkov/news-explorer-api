@@ -10,7 +10,7 @@ module.exports.addErrorCode = (err) => {
       case (/^(E11000).+/gm).test(err.message):
         errorCode = 409;
         break;
-      case (/^(card validation failed).+/gm).test(err.message):
+      case (/^(article validation failed).+/gm).test(err.message):
         errorCode = 400;
         break;
       case (err.message === 'Невозможно удалить чужую карточку'):

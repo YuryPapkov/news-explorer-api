@@ -1,11 +1,11 @@
 const Article = require('../models/article');
-const addErrorcode = require('../utils/addErrorCode.js');
+const { addErrorCode } = require('../utils/addErrorCode.js');
 
 module.exports.getArticles = (req, res, next) => {
   Article.find({})
     .then((cards) => res.send({ data: cards }))
     .catch((err) => {
-      next(addErrorcode(err));
+      next(addErrorCode(err));
     });
 };
 
@@ -20,6 +20,7 @@ module.exports.createArticle = (req, res, next) => {
     image,
   } = req.body;
   const owner = { _id: req.user._id };
+  console.log(owner);
   Article.create({
     keyword,
     title,
@@ -32,24 +33,28 @@ module.exports.createArticle = (req, res, next) => {
   })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      next(addErrorcode(err));
+      console.log(err.name);
+      next(addErrorCode(err));
     });
 };
 
 module.exports.deleteArticle = ((req, res, next) => {
-  Article.findById(req.params.articleId)
+  console.log('del');
+  Article.findById(req.params.articleId).select('+owner')
     .orFail(() => { const e = new Error('Карточка не найдена'); e.name = 'NotFound'; return e; })
     .then((article) => {
-      if (article.owner._id !== req.user._id) {
+      if (String(article.owner) !== req.user._id) {
         const e = new Error('Невозможно удалить чужую карточку');
         e.name = 'Forbidden';
-        return e;
+        throw e;
       }
-      Article.findByIdAndRemove(req.params.articleID)
-        .then((articleDeleted) => res.send({ data: articleDeleted }));
+      Article.findByIdAndRemove(req.params.articleId)
+        .then((articleDeleted) => {
+          res.send({ data: articleDeleted });
+        });
     })
     .catch((err) => {
-      next(addErrorcode(err));
+      next(addErrorCode(err));
     });
 });
 
