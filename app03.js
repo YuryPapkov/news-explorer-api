@@ -19,13 +19,13 @@ mongoose.connect('mongodb://localhost:27017/newsdb', {
 });
 app.use(bodyParser.json());
 app.use(requestLogger);
-app.post('/signin', celebrate({
+app.post('/api/signin', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().pattern(/[\d\w.-_]+@[\d\w._-]+/),
     password: Joi.string().required().min(2).max(30),
   }),
 }), login);
-app.post('/signup', celebrate({
+app.post('/api/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().pattern(/[\d\w.-_]+@[\d\w._-]+/),
     password: Joi.string().required().min(2).max(30),
@@ -34,7 +34,7 @@ app.post('/signup', celebrate({
   }),
 }), createUser);
 app.use(auth);
-app.use('/', router);
+app.use('/api', router);
 // app.use(express.static(path.join(__dirname, 'public')));
 app.use('*', (req, res) => { res.status(404).send({ message: 'Запрашиваемый ресурс не найден' }); });
 app.use(errorLogger);

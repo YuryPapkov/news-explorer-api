@@ -55,38 +55,3 @@ module.exports.login = (req, res, next) => {
         });
     });
 };
-
-// module.exports.getUsers = (req, res, next) => {
-//   User.find({})
-//     .then((users) => res.send({ data: users }))
-//     .catch(next);
-// };
-
-// module.exports.getUserById = (req, res, next) => {
-//   User.findById(req.params.userId)
-//     .orFail(() => { const e = new Error('Пользователь не найден'); e.name = 'NotFound'; return e; })
-//     .then((user) => res.send({ data: user }))
-//     .catch((err) => {
-//       next(addErrorCode(err));
-//     });
-// };
-
-// module.exports.updateUser = (req, res, next) => {
-//   const { name, about } = req.body;
-//   User.findByIdAndUpdate(req.user._id, { name, about }, { new: true })
-//     .orFail(() => { const e = new Error('Пользователь не найден'); e.name = 'NotFound'; return e; })
-//     .then((user) => res.send({ data: user }))
-//     .catch((err) => {
-//       next(addErrorCode(err));
-//     });
-// };
-
-// module.exports.updateUserAvatar = (req, res, next) => {
-//   const { avatar } = req.body;
-//   User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
-//     .orFail(() => { const e = new Error('Пользователь не найден'); e.name = 'NotFound'; return e; })
-//     .then((user) => res.send({ data: user }))
-//     .catch((err) => {
-//       next(addErrorCode(err));
-//     });
-// };
