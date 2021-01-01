@@ -1,4 +1,6 @@
 # Дипломный проект бэкенд
+# Доменное имя
+http://papkov-news.students.npmoreparties.xyz
 
 ## Директории
 
