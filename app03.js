@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3003 } = process.env;
 const app = express();
 const bodyParser = require('body-parser');
 const { celebrate, Joi, errors } = require('celebrate');
@@ -46,5 +46,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log('Listening Port 3000');
+  console.log('Listening Port 3003');
 });

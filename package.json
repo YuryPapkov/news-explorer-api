@@ -2,10 +2,10 @@
   "name": "news-explorer-api",
   "version": "1.0.0",
   "description": "## Директории",
-  "main": "app.js",
+  "main": "app03.js",
   "scripts": {
-    "dev": "nodemon app.js",
-    "start": "node app.js",
+    "dev": "nodemon app03.js",
+    "start": "node app03.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
