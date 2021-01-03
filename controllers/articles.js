@@ -2,7 +2,7 @@ const Article = require('../models/article');
 const { addErrorCode } = require('../utils/addErrorCode.js');
 
 module.exports.getArticles = (req, res, next) => {
-  Article.find({})
+  Article.find({ owner: req.user })
     .then((cards) => res.send({ data: cards }))
     .catch((err) => {
       next(addErrorCode(err));
@@ -20,7 +20,6 @@ module.exports.createArticle = (req, res, next) => {
     image,
   } = req.body;
   const owner = { _id: req.user._id };
-  console.log(owner);
   Article.create({
     keyword,
     title,
@@ -31,7 +30,10 @@ module.exports.createArticle = (req, res, next) => {
     image,
     owner,
   })
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      Article.findById(card._id)
+        .then((article) => res.send({ data: article }));
+    })
     .catch((err) => {
       console.log(err.name);
       next(addErrorCode(err));
@@ -51,6 +53,9 @@ module.exports.deleteArticle = ((req, res, next) => {
       Article.findByIdAndRemove(req.params.articleId)
         .then((articleDeleted) => {
           res.send({ data: articleDeleted });
+        })
+        .catch((err) => {
+          next(addErrorCode(err));
         });
     })
     .catch((err) => {

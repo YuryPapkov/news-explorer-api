@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const { PORT = 3003 } = process.env;
+const { PORT = 3003, MONGO_URL = 'mongodb://localhost:27017/newsdb' } = process.env;
 const app = express();
 const bodyParser = require('body-parser');
 const { celebrate, Joi, errors } = require('celebrate');
@@ -11,7 +11,7 @@ const router = require('./routes/index.js');
 const { login, createUser } = require('./controllers/users');
 const { auth } = require('./middlewares/auth.js');
 
-mongoose.connect('mongodb://localhost:27017/newsdb', {
+mongoose.connect(MONGO_URL, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,

@@ -25,7 +25,7 @@ module.exports.createUser = (req, res, next) => {
 
     .then((user) => res.send({ data: { name: user.name, email: user.email } }))
     .catch((err) => {
-      console.log(err.message);
+      console.log(err.name);
       next(addErrorCode(err));
     });
 };
@@ -35,12 +35,13 @@ module.exports.login = (req, res, next) => {
   User.findOne({ email }).select('+password') // делаем доступным password из БД
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильный email или пароль'));
+        throw new Error('Неправильный email или пароль');
       }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            return Promise.reject(new Error('Неправильный email или пароль'));
+            console.log('not matched');
+            throw new Error('Неправильный email или пароль');
           }
           const token = jwt.sign(
             { _id: user._id },
@@ -53,5 +54,8 @@ module.exports.login = (req, res, next) => {
         .catch((err) => {
           next(addErrorCode(err));
         });
+    })
+    .catch((err) => {
+      next(addErrorCode(err));
     });
 };
