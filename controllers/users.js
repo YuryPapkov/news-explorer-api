@@ -2,15 +2,17 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const { addErrorCode } = require('../utils/addErrorCode.js');
+const NotFound = require('../utils/errors/not-found-error.js');
+const AuthError = require('../utils/errors/auth-error.js');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(() => { const e = new Error('Пользователь не найден'); e.name = 'NotFound'; throw e; })
+    .orFail(() => { throw new NotFound('Пользователь не найден'); })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      next(addErrorCode(err));
+      next(err);
     });
 };
 
@@ -25,7 +27,7 @@ module.exports.createUser = (req, res, next) => {
 
     .then((user) => res.send({ data: { name: user.name, email: user.email } }))
     .catch((err) => {
-      console.log(err.name);
+      console.log(err);
       next(addErrorCode(err));
     });
 };
@@ -35,13 +37,14 @@ module.exports.login = (req, res, next) => {
   User.findOne({ email }).select('+password') // делаем доступным password из БД
     .then((user) => {
       if (!user) {
-        throw new Error('Неправильный email или пароль');
+        console.log('lll');
+        throw new AuthError('Неправильный email или пароль - User does not exist');
       }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
             console.log('not matched');
-            throw new Error('Неправильный email или пароль');
+            throw new AuthError('Неправильный email или пароль - password failed');
           }
           const token = jwt.sign(
             { _id: user._id },
@@ -52,10 +55,10 @@ module.exports.login = (req, res, next) => {
           return null;
         })
         .catch((err) => {
-          next(addErrorCode(err));
+          next(err);
         });
     })
     .catch((err) => {
-      next(addErrorCode(err));
+      next(err);
     });
 };

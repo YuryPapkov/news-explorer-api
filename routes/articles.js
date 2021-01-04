@@ -6,13 +6,13 @@ articlesRouter.get('/articles', getArticles);
 articlesRouter.post('/articles',
   celebrate({
     body: Joi.object().keys({
-      keyword: Joi.string().required().min(2).max(50),
-      title: Joi.string().required().min(2).max(50),
+      keyword: Joi.string().required().min(2),
+      title: Joi.string().required().min(2),
       text: Joi.string().required().min(2),
-      date: Joi.string().required().min(2).max(15),
-      source: Joi.string().required().min(2).max(50),
-      link: Joi.string().required().pattern(/^https?:\/\/\S+/),
-      image: Joi.string().required().pattern(/^https?:\/\/\S+/),
+      date: Joi.string().required().min(2),
+      source: Joi.string().required().min(2),
+      link: Joi.string().required().pattern(/^https?:\/\/[\w\d.@:%_+~#=]+\.\w{2,4}$/),
+      image: Joi.string().required().pattern(/^https?:\/\/[\w\d.@:%_+~#=]+\.\w{2,4}$/),
     }),
   }),
   createArticle);
