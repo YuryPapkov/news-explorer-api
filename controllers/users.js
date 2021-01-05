@@ -1,9 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const { addErrorCode } = require('../utils/addErrorCode.js');
 const NotFound = require('../utils/errors/not-found-error.js');
 const AuthError = require('../utils/errors/auth-error.js');
+const ConflictError = require('../utils/errors/conflict-error.js');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -24,11 +24,15 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => User.create({
       email, password: hash, name,
     }))
-
     .then((user) => res.send({ data: { name: user.name, email: user.email } }))
     .catch((err) => {
-      console.log(err);
-      next(addErrorCode(err));
+      if (err.code === 11000) {
+        throw new ConflictError('Невозможно создать пользователя');
+      }
+      next(err);
+    })
+    .catch((err) => {
+      next(err);
     });
 };
 
@@ -37,13 +41,11 @@ module.exports.login = (req, res, next) => {
   User.findOne({ email }).select('+password') // делаем доступным password из БД
     .then((user) => {
       if (!user) {
-        console.log('lll');
         throw new AuthError('Неправильный email или пароль - User does not exist');
       }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            console.log('not matched');
             throw new AuthError('Неправильный email или пароль - password failed');
           }
           const token = jwt.sign(
