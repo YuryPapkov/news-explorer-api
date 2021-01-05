@@ -21,7 +21,7 @@ mongoose.connect(MONGO_URL, {
 app.use(bodyParser.json());
 app.use(requestLogger);
 app.use(helmet());
-app.use('/', router);
+app.use('/api', router);
 app.use('*', () => {
   throw new NotFound('Запрашиваемый ресурс не найден');
 });
