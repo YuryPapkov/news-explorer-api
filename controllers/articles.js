@@ -1,7 +1,6 @@
 const Article = require('../models/article');
 const Forbidden = require('../utils/errors/forbidden-error.js');
 const NotFound = require('../utils/errors/not-found-error.js');
-// const InternalError = require('../utils/errors/internal-error.js');
 
 module.exports.getArticles = (req, res, next) => {
   Article.find({ owner: req.user })
@@ -31,8 +30,18 @@ module.exports.createArticle = (req, res, next) => {
     owner,
   })
     .then((card) => {
-      Article.findById(card._id)
-        .then((article) => res.send({ data: article }));
+      res.send({
+        data: {
+          _id: card._id,
+          keyword: card.keyword,
+          title: card.title,
+          text: card.text,
+          date: card.date,
+          source: card.source,
+          link: card.link,
+          image: card.image,
+        },
+      });
     })
     .catch(next);
 };

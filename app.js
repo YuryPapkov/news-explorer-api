@@ -8,6 +8,7 @@ const helmet = require('helmet');
 const bodyParser = require('body-parser');
 const { errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger.js');
+const limiter = require('./middlewares/rate-limitter.js');
 const commonErrorHandler = require('./middlewares/common-error-handler.js');
 const router = require('./routes/index.js');
 const NotFound = require('./utils/errors/not-found-error.js');
@@ -20,6 +21,7 @@ mongoose.connect(MONGO_URL, {
 });
 app.use(bodyParser.json());
 app.use(requestLogger);
+app.use(limiter);
 app.use(helmet());
 app.use('/api', router);
 app.use('*', () => {
@@ -31,5 +33,5 @@ app.use(errors());
 // обработка ошибок централизованная
 app.use(commonErrorHandler);
 app.listen(PORT, () => {
-  console.log('Listening Port ', PORT);
+  // console.log('Listening Port ', PORT);
 });
