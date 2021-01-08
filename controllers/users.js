@@ -11,9 +11,7 @@ module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => { throw new NotFound('Пользователь не найден'); })
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 module.exports.createUser = (req, res, next) => {
@@ -26,14 +24,12 @@ module.exports.createUser = (req, res, next) => {
     }))
     .then((user) => res.send({ data: { name: user.name, email: user.email } }))
     .catch((err) => {
-      if (err.code === 11000) {
-        throw new ConflictError('Невозможно создать пользователя');
+      if (err.code === 11000 && err.name === 'MongoError') {
+        throw new ConflictError('Пользователь с таким email уже существует');
       }
       next(err);
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 module.exports.login = (req, res, next) => {
@@ -41,12 +37,12 @@ module.exports.login = (req, res, next) => {
   User.findOne({ email }).select('+password') // делаем доступным password из БД
     .then((user) => {
       if (!user) {
-        throw new AuthError('Неправильный email или пароль - User does not exist');
+        throw new AuthError('Неправильный email или пароль');
       }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
-            throw new AuthError('Неправильный email или пароль - password failed');
+            throw new AuthError('Неправильный email или пароль');
           }
           const token = jwt.sign(
             { _id: user._id },
@@ -56,11 +52,7 @@ module.exports.login = (req, res, next) => {
           res.send({ token });
           return null;
         })
-        .catch((err) => {
-          next(err);
-        });
+        .catch(next);
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };

@@ -31,5 +31,5 @@ app.use(errors());
 // обработка ошибок централизованная
 app.use(commonErrorHandler);
 app.listen(PORT, () => {
-  //  console.log('Listening Port ', PORT);
+  console.log('Listening Port ', PORT);
 });

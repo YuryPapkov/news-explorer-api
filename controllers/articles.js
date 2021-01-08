@@ -1,17 +1,12 @@
 const Article = require('../models/article');
 const Forbidden = require('../utils/errors/forbidden-error.js');
 const NotFound = require('../utils/errors/not-found-error.js');
-const InternalError = require('../utils/errors/internal-error.js');
+// const InternalError = require('../utils/errors/internal-error.js');
 
 module.exports.getArticles = (req, res, next) => {
   Article.find({ owner: req.user })
-    .orFail(() => {
-      throw new InternalError('Ошибка обращения к БД');
-    })
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 module.exports.createArticle = (req, res, next) => {
@@ -39,9 +34,7 @@ module.exports.createArticle = (req, res, next) => {
       Article.findById(card._id)
         .then((article) => res.send({ data: article }));
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 };
 
 module.exports.deleteArticle = ((req, res, next) => {
@@ -61,7 +54,5 @@ module.exports.deleteArticle = ((req, res, next) => {
           next(err);
         });
     })
-    .catch((err) => {
-      next(err);
-    });
+    .catch(next);
 });
